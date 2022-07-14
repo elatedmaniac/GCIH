@@ -1,4 +1,4 @@
-# Lab 3 Passwords
+# Lab 3 Passwords and Access Attacks
 
 ## 3.1 Password Guessing Attacks with Hydra
 
@@ -330,3 +330,5 @@ Bucket Found: movies ( http://s3.amazonaws.com/movies )
 Bucket found but access denied: prod
 
 ```
+
+## 3.6
