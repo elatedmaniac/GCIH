@@ -329,10 +329,11 @@ http://169.254.169.254/latest/meta-data/iam/info
 
 # results of our curl request
 {
-	"Code": "Success",
-	"LastUpdated": "2021-05-02T18:50:40Z",
-	"InstanceProfileArn": "arn:aws:iam::896453262835:instance-profile/falsimentis-deploy-role",
-	"InstanceProfileId": "AIPA5BOGHHXZELSK34VU4"
+"Code": "Success",
+"LastUpdated": "2021-05-02T18:50:40Z",
+"InstanceProfileArn":
+"arn:aws:iam::896453262835:instance-profile/falsimentis-deploy-role",
+"InstanceProfileId": "AIPA5BOGHHXZELSK34VU4"
 }
 
 # For the falsimentis-deploy-role, we try to get the creds:
@@ -340,12 +341,12 @@ http://169.254.169.254/latest/meta-data/iam/security-credentials/falsimentis-dep
 
 # Results:
 {
-	"Code": "Success",
-	"LastUpdated": "2021-05-02T18:50:40Z",
-	"Type": "AWS-HMAC",
-	"AccessKeyId": "AKIA5HMBSK1SYXYTOXX6",
-	"SecretAccessKey": "CGgQcSdERePvGgr058r3PObPq3+0CfraKcsLREpX",
-	"Token": "NR9Sz/7fzxwIgv7URgHRAckJK0JKbXoNBcy032XeVPqP8/tWiR/KVSdK8FTPfZWbxQ==",
-	"Expiration": "2026-05-02T18:50:40Z"
+"Code": "Success",
+"LastUpdated": "2021-05-02T18:50:40Z",
+"Type": "AWS-HMAC",
+"AccessKeyId": "AKIA5HMBSK1SYXYTOXX6",
+"SecretAccessKey": "CGgQcSdERePvGgr058r3PObPq3+0CfraKcsLREpX",
+"Token": "NR9Sz/7fzxwIgv7URgHRAckJK0JKbXoNBcy032XeVPqP8/tWiR/KVSdK8FTPfZWbxQ==",
+"Expiration": "2026-05-02T18:50:40Z"
 }
 ```

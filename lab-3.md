@@ -189,6 +189,7 @@ __Hash types:__
 - 500	__md5crypt__, MD5 (Unix), Cisco-IOS \$1\$ (MD5) 2	\$1\$28772684$iEwNOgGugqO9.bIz5sk8k/
 - 1800	__sha512crypt__ \$6\$, SHA512 (Unix) 2	\$6\$52450745$k5ka2p8bFuSmoVT1tzOyyuaREkkKBcCNqoDKzYiJL9RaE8yMnPgh2XzzF0NDrUhgrcLwg78xs1w5pJiypEdFX/
 - 7400	__sha256crypt__ \$5\$, SHA256 (Unix) 2	\$5\$rounds=5000\$GX7BopJZJxPc/KEK\$le16UF8I2Anb.rOrn22AUPWvzUETDGefUmAV8AZkGcD
+- 7900 Drupal passwords
 
 [Hashcat formats](https://hashcat.net/wiki/doku.php?id=example_hashes)
 

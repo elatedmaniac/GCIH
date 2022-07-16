@@ -1,4 +1,4 @@
-# Recon, Scanning, Enumeration
+# Lab 2 Recon, Scanning, Enumeration
 
 ## 2.1 Spiderfoot and OSINT
 
