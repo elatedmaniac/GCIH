@@ -16,6 +16,29 @@ flags:
 - -o: see the process id numbers on each line
 - -b: shows the program associated with each listening port
 
+#### tcpdump
+
+```bash
+# Capture all traffic on eth0 interface and write to file capture.pcap
+tcpdump -i eth0 -w capture.pcap
+
+# all traffic not from 192.168.0.75 and going to dest 10.10.10.10
+tcpdump -eth0 'not src 192.168.0.75 and dst 10.10.10.10'
+
+# Only ping traffic going to host 10.10.10.10
+tcpdump -eth0 'icmp and (dst host 10.10.10.10)'
+```
+
+Additional flags:
+
+- -r: read packets from file
+- -n: do not resolve IP addresses
+- -A: display payload
+
+#### Squid Log Format
+
+![squid](img/lab1/squid.PNG)
+
 ### Processes and Services
 
 ```powershell
@@ -128,17 +151,7 @@ HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Run
     WavesSvc    REG_SZ    "C:\Windows\System32\DriverStore\FileRepository\wavesapo10de.inf_amd64_ed8cfd6e0eecb72a\WavesSvc64.exe" -Jack
 ```
 
-```powershell
-
-```
-
 ## 1.2 Falsimentis (Linux) AWK
-
-Situation: the CEO of Falsimentis company logged on to his computer after returning from lunch to find he was the victim of a ransomware attack. The attackers are the Midnite Meerkats.
-
-Sources: Squid ```access.log```, pcap, useragent.log, and memory capture.
-
-Known infected devices:
 
 CEO Computer: __172.16.42.107__
 
@@ -188,7 +201,6 @@ Offset(P)          Proto    Local Address                  Foreign Address      
 0x893a0d78         UDPv4    127.0.0.1:512                  *:*                                   4856     svchost.exe    2020-03-19 01:35:04 UTC+0000
 0x8b118ab0         TCPv4    172.16.42.103:50814            23.211.108.33:443    CLOSE_WAIT       3688     SearchUI.exe   
 0x8b15ecb8         TCPv4    172.16.42.103:51319            13.107.246.10:443    CLOSE_WAIT       3688     SearchUI.exe   
-
 ```
 
 Volatility plugins:

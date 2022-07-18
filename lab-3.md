@@ -1,5 +1,13 @@
 # Lab 3 Passwords and Access Attacks
 
+Credential stuffing:
+
+Password spraying:
+
+Salting passwords makes rainbow attacks difficult because random nonce added.
+
+PAM used to enforce password complexity policies on Linux
+
 ## 3.1 Password Guessing Attacks with Hydra
 
 This is a basic password spraying attack
@@ -124,6 +132,8 @@ msf6 auxiliary(scanner/ssh/ssh_login) > run
 ```
 
 ## 3.2 John the Ripper
+
+__ALL UPPERCASE CHARACTERS IN JOHN PASS OUTPUT = LANMAN ALGO__
 
 ```bash
 # Unshadow the shadow and passwd files

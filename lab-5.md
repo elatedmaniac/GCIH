@@ -262,3 +262,4 @@ Run a NC command and validate with `taskmgr`
 Use LADS to detect ADS's
 
 ## 5.4 Establishing Persistence with Metasploit
+

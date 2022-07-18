@@ -18,7 +18,7 @@ Relevant Browse sections:
 
 ## 2.2 DNS Interrogation
 
-IP: 174.30.0.254
+__TCP packets to port 53 are indicators of network mapping.__
 
 We use ```whois``` to query the authoritative DNS server for the domain.
 
@@ -59,9 +59,24 @@ www.falsimentis.com.	86400	IN	A	45.76.171.86
 dig +short @172.30.0.254 AXFR falsimentis.com
 ```
 
-## 2.3 NMAP
+## 2.3 NMAP + Mapping
+
+Lots of ARP packets looking for hosts sequentially indicate host discovery.
+
+### Ping
+
+Multiple pings to/ from IPs within the same network `-->` network mapping.
+
+### TTL
+
+In both IPv4 & IPv6 __valid TTL or Hop Limits are 0-254__
+
+If the value is 0, the router sends back a __Time Exceeded__ message.
 
 ```bash
+# NMAP host discovery (can also give CIDR range)
+sudo nmap -sn 192.168.1.1-254
+
 # Uses a SYN scan on all ports, gets version of service if possible
 nmap -sV -sS -p- 172.30.0.254
 
@@ -110,7 +125,23 @@ open tcp 443 10.200.248.218 1657656901
 
 ## 2.5 SMB + RPC Sessions
 
-Need to have both VMs online for this lab
+If __SMBv2__ is turned on and v1 is turned off, __SHA-256 signing is enabled__ for message integrity.
+
+Domain controllers have a business need for SMB
+
+![smb versions](img/lab2/smbversions.PNG)
+
+SMB Shares:
+
+- IPC$: used for remote access
+- C$: requires admin privileges, allow disk access
+
+```powershell
+# Establish SMB session from Windows
+C:\WINDOWS\system32>net use \\targetip
+
+C:\WINDOWS\system32>net use \\targetip\sharename password /u:username
+```
 
 ```bash
 # May need to use -m SMB2 if negotiation fails because SMBv1 is disabled on the target
@@ -196,7 +227,7 @@ rpcclient $> queryuser 500
 	logon_hrs[0..21]...
 ```
 
-Terminating sessions
+### Terminating sessions
 
 ```powershell
 # Find the session
@@ -207,7 +238,7 @@ Computer               User name            Client Type       Opens Idle time
 \\10.10.75.1           sec504                                     6 00:02:31
 The command completed successfully.
 
-# Kill it
+# Kill inbound session
 C:\WINDOWS\system32>net session \\10.10.75.1 /del
 The session from 10.10.75.1 has open files.
 
