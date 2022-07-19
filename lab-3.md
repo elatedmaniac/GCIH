@@ -203,11 +203,22 @@ __Hash types:__
 
 [Hashcat formats](https://hashcat.net/wiki/doku.php?id=example_hashes)
 
-## 3.4 Domain Password Audit Tool (DPAT) + Secretsdump
+## 3.4 Windows Passwords
 
 - DPAT is used to evaluate the relative security of cracked passwords
   - Provides links to stats about password length, reuse, number of admin and domain account passes broken, etc.
 - secretsdump.py is a script used to extract AD passwords and password history
+- ntdsutil: cmd tool that provides management facilities for Active Directory Domain Services (AD DS) and Active Directory Lightweight Directory Services (AD LDS). Widely used by attackers to retrieve domain password hash data for processing with Impacket secretsdump.py.
+
+### NTDSUtil
+
+```powershell
+#  make a directory called temp in the C:\ drive and asks NTDSUtil to use its ability to tap into the Active Directory Database and fetch the SYSTEM 
+# and SECURITY hive files as well as the ntds.dit file.
+powershell "ntdsutil.exe 'ac i ntds' 'ifm' 'create full c:\temp' q q"
+```
+
+### Secretsdump
 
 ```bash
 secretsdump.py -system registry/SYSTEM -ntds "Active Directory/ntds.dit" LOCAL -outputfile w99 -history
@@ -265,21 +276,16 @@ a6199326f6091aeaeb35d55d5365b739:##1104SoRi
 python dpat.py -n ../Wardrobe99/w99.ntds -c ../Wardrobe99/w99.potfile -g ../Wardrobe99/groups/*.txt
 ```
 
+### Domain Password Audit Tool (DPAT)
+
 ![DPAT](img/lab3/DPAT.PNG)
 
 ## 3.5 Cloud Bucket Discovery
 
-__BucketFinder:__ 
+__BucketFinder:__
 
 - Any buckets it finds based on provided wordlist it checks to see if the bucket is public, private or a redirect.
 - Public buckets are checked for directory indexing being enabled, if it is then all files listed will be checked using HEAD to see if they are public or private. Redirects are followed and the final destination checked.
-
-__AWS Creds for this exercise:__
-
-```text
-aws_access_key_id = AKIAJQHVNFNMLINIZY6C
-aws_secret_access_key = 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
-```
 
 ```bash
 # Make a bucket
@@ -322,7 +328,7 @@ download: s3://www.falsimentis.com/protected/sales-status.json to protected/sale
 download: s3://www.falsimentis.com/protected/.htpasswd to protected/.htpasswd
 ```
 
-__Bucket Finder__
+### Bucket Finder
 
 ```bash
 ec504@slingshot:~$ bucket_finder.rb ~/labs/s3/shortlist.txt 

@@ -263,3 +263,16 @@ Use LADS to detect ADS's
 
 ## 5.4 Establishing Persistence with Metasploit
 
+## 5.5 Cloud Post-Exploitation
+
+pgs: 88-101
+
+- __WeirdAAL:__ enumerates AWS access with creds in .env file.
+  - 
+
+- ScoutSuite
+
+- CloudMapper
+
+- iwr
+

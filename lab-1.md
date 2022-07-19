@@ -16,6 +16,13 @@ flags:
 - -o: see the process id numbers on each line
 - -b: shows the program associated with each listening port
 
+#### Port Forwarding
+
+```bash
+# Allows anyone on the remote server to connect to TCP port 8080 on the remote server.
+ssh -R 8080:localhost:80 public.example.com
+```
+
 #### tcpdump
 
 ```bash
