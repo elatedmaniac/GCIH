@@ -1,8 +1,29 @@
 # Lab 1 Live Investigations and Static Analysis
 
+## IR Steps and Process
+
+### PICERL
+
+1. __Preparation:__ all policies, procedures, implementations that occur prior to an incident occurring
+2. __Identification:__ detection of an incident (prior to response phase, still); __scoping occurs here.__
+3. __Containment:__ short-term quarantine, then evidence collection, followed by longer-term cessation of a service
+4. __Eradication:__ undoing attacker actions (changing passwords, removing malicious data, killing processes, etc.)
+5. __Recovery:__ steps taken to resume normal business system operations
+6. __Lessons Learned:__ vulnerabilities are mitigated and root cause analysis is presented.
+
+### DAIR
+
+![DAIR](img/lab1/DAIR.PNG)
+
+After detection, 1st step is __verification__.
+
+2nd step is __triage__.
+
 ## 1.1 Live Windows Forensics
 
 ### Networking
+
+#### Netstat
 
 ```powershell
 # netstat  
@@ -15,6 +36,28 @@ flags:
 - -a: active TCP connections and listening ports
 - -o: see the process id numbers on each line
 - -b: shows the program associated with each listening port
+
+#### Netsh
+
+Dump the detailed config of the built-in Windows firewall.
+
+```powershell
+C:\Users\sec504>netsh advfirewall show currentprofile
+
+Domain Profile Settings:
+----------------------------------------------------------------------
+State                                 ON
+Firewall Policy                       BlockInbound,AllowOutbound
+LocalFirewallRules                    N/A (GPO-store only)
+LocalConSecRules                      N/A (GPO-store only)
+InboundUserNotification               Disable
+RemoteManagement                      Disable
+UnicastResponseToMulticast            Enable
+
+Logging:
+LogAllowedConnections                 Disable
+LogDroppedConnections                 Disable
+```
 
 #### Port Forwarding
 
@@ -158,6 +201,20 @@ HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Run
     WavesSvc    REG_SZ    "C:\Windows\System32\DriverStore\FileRepository\wavesapo10de.inf_amd64_ed8cfd6e0eecb72a\WavesSvc64.exe" -Jack
 ```
 
+### Windows EventViewer
+
+Using the GUI and filtering for events worked on both practice tests.
+
+__Common Win Events:__
+
+- __4624:__ successful logon
+- __4625:__ failed logon
+- __4688:__ A new process has been created
+- __4720:__ A user account was created.
+- __4728:__ member added to security-enabled global group.
+- __4732:__  A member was added to a security-enabled local group
+- __4768:__ A Kerberos authentication ticket (TGT) was requested
+
 ## 1.2 Falsimentis (Linux) AWK
 
 CEO Computer: __172.16.42.107__
@@ -198,7 +255,8 @@ cd /opt/volatility
 source venv/bin/activate
 
 # Don't export file location or profile, per the instrtuctions.
-python vol.py -f /home/sec504/labs/falsimentis/FM-TETRIS.mem --profile=Win10x86_15063 netscan
+python vol.py -f /home/sec504/labs/falsimentis/FM-TETRIS.mem /
+--profile=Win10x86_15063 netscan
 
 Offset(P)          Proto    Local Address                  Foreign Address      State            Pid      Owner          Created
 0x856e2a40         UDPv4    127.0.0.1:512                  *:*                                   976      svchost.exe    2020-03-19 01:34:49 UTC+0000
@@ -210,12 +268,12 @@ Offset(P)          Proto    Local Address                  Foreign Address      
 0x8b15ecb8         TCPv4    172.16.42.103:51319            13.107.246.10:443    CLOSE_WAIT       3688     SearchUI.exe   
 ```
 
-Volatility plugins:
+__Volatility plugins:__
 
-- netscan: lists network connections at time of capture with PID, src and dst IP + ports, and protocol
-- pstree: lists processes running when memory was captured in dot tree format
-- filescan: examines file objects
-- dlllist: examines loaded dlls from memory capture
+- __netscan:__ lists network connections at time of capture with PID, src and dst IP + ports, and protocol
+- __pstree:__ lists processes running when memory was captured in dot tree format
+- __filescan:__ examines file objects
+- __dlllist:__ examines loaded dlls from memory capture
 
 ## 1.4 Malware Investigation
 

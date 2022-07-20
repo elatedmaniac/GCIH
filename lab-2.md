@@ -4,19 +4,21 @@
 
 Sections:
 
-- Browse: general results sorted by data type/ source
-- Graph: Shows a relationship between a datapoint from one plugin that seeds another plugin result
-- Status: shows a bar chart of all the plugins used to evaluate the target and the number of results
+- __Browse:__ general results sorted by data type/ source
+- __Graph:__ Shows a relationship between a datapoint from one plugin that seeds another plugin result
+- __Status:__ shows a bar chart of all the plugins used to evaluate the target and the number of results
 
 Relevant Browse sections:
 
-- Affiliate - Internet Name: identifies the service providers and hosting companies associated with the target
-- Co-Hosted Site - Domain Name: shows any domain names associated with a discovered target
-- Email Addresses: shows any email addresses found during a webcrawl
-- Hacked Email Address: (typically found with HaveIBeenPwned)
-- Web Technology: see what technology the website was built with (e.g. PHP, Linode, Meteor, GoDaddy SSL, etc.)
+- __Affiliate - Internet Name:__ identifies the service providers and hosting companies associated with the target
+- __Co-Hosted Site - Domain Name:__ shows any domain names associated with a discovered target
+- __Email Addresses:__ shows any email addresses found during a webcrawl
+- __Hacked Email Address:__ (typically found with HaveIBeenPwned)
+- __Web Technology:__ see what technology the website was built with (e.g. PHP, Linode, Meteor, GoDaddy SSL, etc.)
 
 ## 2.2 DNS Interrogation
+
+DNS typically uses UDP on port 53.
 
 __TCP packets to port 53 are indicators of network mapping.__
 
@@ -59,13 +61,27 @@ www.falsimentis.com.	86400	IN	A	45.76.171.86
 dig +short @172.30.0.254 AXFR falsimentis.com
 ```
 
+__Defenses:__
+
+1. __Don't allow zone transfers__ from just any system
+2. Use __split DNS__ (separates internal and external traffic DNS requests)
+3. __Inspect__ DNS server __logs__ for signs of recon and attacker IPs to leverage in threat intel.
+
 ## 2.3 NMAP + Mapping
+
+==__pgs: 50-63__==
+
+By default, NMAP sends the following four packets: ICMP Echo Request, TCP SYN to 443, TCP ACK 80, ICMP Timestamp request
 
 Lots of ARP packets looking for hosts sequentially indicate host discovery.
 
 ### Ping
 
 Multiple pings to/ from IPs within the same network `-->` network mapping.
+
+Attackers send an ICMP echo request to a range of IP addresses.
+
+Ping can also be used by attackers to test whether outbound connections are possible.
 
 ### TTL
 

