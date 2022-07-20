@@ -265,14 +265,21 @@ Use LADS to detect ADS's
 
 ## 5.5 Cloud Post-Exploitation
 
-pgs: 88-101
+==__pgs: 88-101__==
 
 - __WeirdAAL:__ enumerates AWS access with creds in .env file.
-  - 
+  - can target all or specific cloud functions.
+  - can brute-force privilege and access enumeration; noisy
+- __iwr:__ AzureStealth tool for detecting shadow admin accounts (account has admin privileges without being an 'official' admin account)
+  - __NOT__ designed as an attack tool.
+  - shadow admin account can be used to create a backdoor.
+- __gcloud:__ used to authenticate with GCP and provide similar API access as AWS CLI.
+  - Attackers can download database backups made to intermediate buckets with `gsutil`
+- __CloudMapper:__ free tool for visualizing + auditing AWS cloud deployments.
+  - Requires user creds with `Security Audit` role and `ViewOnlyAccess` privilege.
+  - Helps ID priv esc vulns, publicly accessible assets, and unused resources.
+- __ScoutSuite:__ multi-cloud vulnerability assessment tool that requires privileged access to provide comprehensive reports.
 
-- ScoutSuite
+![cloudmapper](img/lab5/cloudmapper.PNG)
 
-- CloudMapper
-
-- iwr
-
+![scoutsuite](img/lab5/scoutsuite.PNG)

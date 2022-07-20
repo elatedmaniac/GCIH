@@ -1,10 +1,10 @@
 # Lab 3 Passwords and Access Attacks
 
-Credential stuffing:
+__Credential stuffing:__ use passwords cracked from previous data breaches to supplement current lists for dictionary attacks/ rainbow tables.
 
-Password spraying:
+__Password spraying:__ 
 
-Salting passwords makes rainbow attacks difficult because random nonce added.
+__Salting__ passwords makes __rainbow__ attacks difficult because random nonce added.
 
 PAM used to enforce password complexity policies on Linux
 
